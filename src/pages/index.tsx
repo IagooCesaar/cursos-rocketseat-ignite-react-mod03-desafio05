@@ -1,4 +1,5 @@
 import { GetStaticProps } from 'next';
+import Prismic from '@prismicio/client';
 
 import { getPrismicClient } from '../services/prismic';
 
@@ -30,16 +31,38 @@ export default function Home({
   posts,
 }: HomeProps): JSX.Element {
   // TODO
-  return <h1>Home</h1>;
+  return (
+    <>
+      <h1>Home</h1>
+      {JSON.stringify(posts)}
+    </>
+  );
 }
 
 export const getStaticProps: GetStaticProps = async () => {
   const prismic = getPrismicClient();
-  // const postsResponse = await prismic.query(TODO);
-
-  // TODO
+  const postsResponse = await prismic.query(
+    [Prismic.predicates.at('document.type', 'posts')],
+    {
+      pageSize: 3,
+      fetch: ['posts.title', 'posts.subtitle', 'posts.author'],
+    }
+  );
+  const posts: Post[] = postsResponse.results.map(post => {
+    return {
+      uid: post.uid,
+      first_publication_date: post.first_publication_date,
+      data: {
+        author: post.data.author,
+        subtitle: post.data.subtitle,
+        title: post.data.title,
+      },
+    };
+  });
 
   return {
-    props: {},
+    props: {
+      posts,
+    },
   };
 };
