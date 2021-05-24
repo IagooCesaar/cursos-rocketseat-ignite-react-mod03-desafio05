@@ -44,8 +44,9 @@ export const getStaticProps: GetStaticProps = async () => {
   const postsResponse = await prismic.query(
     [Prismic.predicates.at('document.type', 'posts')],
     {
-      pageSize: 3,
       fetch: ['posts.title', 'posts.subtitle', 'posts.author'],
+      pageSize: 3,
+      page: 1,
     }
   );
   const posts: Post[] = postsResponse.results.map(post => {
