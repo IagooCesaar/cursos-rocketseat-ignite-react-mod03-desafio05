@@ -26,20 +26,52 @@ interface PostProps {
   post: Post;
 }
 
-// export default function Post() {
-//   // TODO
-// }
+export default function Post(): JSX.Element {
+  // TODO
+  return <h1>Post</h1>;
+}
 
-// export const getStaticPaths = async () => {
-//   const prismic = getPrismicClient();
-//   const posts = await prismic.query(TODO);
+export const getStaticPaths: GetStaticPaths = async () => {
+  const prismic = getPrismicClient();
+  // const posts = await prismic.query(TODO);
 
-//   // TODO
-// };
+  // TODO
+  return {
+    paths: [],
+    fallback: true,
+  };
+};
 
-// export const getStaticProps = async context => {
-//   const prismic = getPrismicClient();
-//   const response = await prismic.getByUID(TODO);
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const { slug } = params;
+  const prismic = getPrismicClient();
+  const response = await prismic.getByUID('posts', String(slug), {});
 
-//   // TODO
-// };
+  const post: Post = {
+    first_publication_date: new Date(
+      response.first_publication_date
+    ).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    }),
+    data: {
+      title: response.data.title,
+      author: response.data.author,
+      banner: {
+        url: '',
+      },
+      content: response.data.content.map(item => {
+        return {
+          heading: item.heading,
+          body: item.body,
+        };
+      }),
+    },
+  };
+
+  // TODO
+  return {
+    post,
+  };
+};
