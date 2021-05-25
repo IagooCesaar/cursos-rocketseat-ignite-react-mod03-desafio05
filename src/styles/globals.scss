@@ -11,7 +11,7 @@
   --info: #bbbbbb;
   --body: #d7d7d7;
 
-  --max-width: 1120px;
+  --max-width: 1070px;
   --header-height: 12rem;
 }
 
@@ -33,7 +33,8 @@ body {
 }
 
 body, input, select, textarea, button {
-  font: 400 1rem "Inter", sans-serif;
+  font: 400 1.125rem "Inter", sans-serif;
+  line-height: 1.375rem;
 }
 
 button {

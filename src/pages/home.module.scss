@@ -1,1 +1,43 @@
-// TODO
+.postItem {
+  display: flex;
+  flex-direction: column;
+
+  & + .postItem {
+    margin-top: 3rem;
+  }
+
+  strong {
+    font-size: 1.75rem;
+    line-height: 2.125rem;
+    color: var(--heading);
+  }
+
+  & > span {
+    margin-top: 0.5rem;
+  }
+
+  .postInfos {
+    margin-top: 1.5rem;
+
+    div {
+      height: 1.25rem;
+      display: inline-flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+
+      & + div {
+        margin-left: 2rem;
+      }
+
+      img {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+      span {
+        margin-left: 0.625rem;
+        font-size: 0.875rem;
+      }
+    }
+  }
+}

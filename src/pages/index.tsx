@@ -1,4 +1,7 @@
 import { GetStaticProps } from 'next';
+import Head from 'next/head';
+import Link from 'next/link';
+
 import Prismic from '@prismicio/client';
 
 import { getPrismicClient } from '../services/prismic';
@@ -33,8 +36,31 @@ export default function Home({
   // TODO
   return (
     <>
-      <h1>Home</h1>
-      {JSON.stringify(posts)}
+      <Head>
+        <title>Home | spacetraveling</title>
+      </Head>
+      <main className={commonStyles.pageContainer}>
+        {posts.map(post => (
+          <div className={styles.postItem}>
+            <Link href={`/post/${post.uid}`}>
+              <a>
+                <strong className={styles.postTitle}>{post.data.title}</strong>
+              </a>
+            </Link>
+            <span className={styles.postSubtitle}>{post.data.subtitle}</span>
+            <div className={styles.postInfos}>
+              <div>
+                <img src="/calendar.png" alt="Data da publicação" />
+                <span>{post.first_publication_date}</span>
+              </div>
+              <div>
+                <img src="/user.png" alt="Autor" />
+                <span>{post.data.author}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </main>
     </>
   );
 }
@@ -52,7 +78,13 @@ export const getStaticProps: GetStaticProps = async () => {
   const posts: Post[] = postsResponse.results.map(post => {
     return {
       uid: post.uid,
-      first_publication_date: post.first_publication_date,
+      first_publication_date: new Date(
+        post.first_publication_date
+      ).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      }),
       data: {
         author: post.data.author,
         subtitle: post.data.subtitle,
