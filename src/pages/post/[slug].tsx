@@ -72,6 +72,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   // TODO
   return {
-    post,
+    props: post,
   };
 };
