@@ -1,1 +1,10 @@
-// TODO
+.headerContainer {
+  height: var(--header-height);
+}
+
+.headerContent {
+  height: var(--header-height);
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 5rem 2rem 4rem;
+}
