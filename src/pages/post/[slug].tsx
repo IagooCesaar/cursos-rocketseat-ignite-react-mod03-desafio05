@@ -1,4 +1,5 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
+import Prismic from '@prismicio/client';
 
 import { getPrismicClient } from '../../services/prismic';
 
@@ -33,11 +34,20 @@ export default function Post(): JSX.Element {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const prismic = getPrismicClient();
-  // const posts = await prismic.query(TODO);
+  const postsResponse = await prismic.query(
+    [Prismic.predicates.at('document.type', 'posts')],
+    {
+      fetch: ['posts.uid'],
+    }
+  );
+  const paths = postsResponse.results.map(post => {
+    return {
+      params: { slug: post.uid },
+    };
+  });
 
-  // TODO
   return {
-    paths: [],
+    paths,
     fallback: true,
   };
 };
