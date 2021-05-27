@@ -12,9 +12,11 @@ import styles from './post.module.scss';
 import { formatDate } from '../../utils/formatDate';
 
 interface Post {
+  uid: string;
   first_publication_date: string | null;
   data: {
     title: string;
+    subtitle: string;
     banner: {
       url: string;
     };
@@ -131,9 +133,11 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }
 
   const post: Post = {
+    uid: response.uid,
     first_publication_date: response.first_publication_date,
     data: {
       title: response.data.title,
+      subtitle: response.data.subtitle,
       author: response.data.author,
       banner: {
         url: response.data.banner.url,
@@ -141,11 +145,12 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       content: response.data.content.map(item => {
         return {
           heading: item.heading,
-          body: item.body.map(bodyItem => {
-            return {
-              text: bodyItem.text,
-            };
-          }),
+          body: item.body,
+          // body: item.body.map(bodyItem => {
+          //   return {
+          //     text: bodyItem.text,
+          //   };
+          // }),
         };
       }),
     },
