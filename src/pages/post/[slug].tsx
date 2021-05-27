@@ -69,7 +69,6 @@ export default function Post({ post }: PostProps): JSX.Element {
                 {contentGroup.body.map(bodyItem => (
                   <p dangerouslySetInnerHTML={{ __html: bodyItem.text }} />
                 ))}
-                {/* <div dangerouslySetInnerHTML={{ __html: bodyItem.text }} /> */}
               </div>
             ))}
           </div>
