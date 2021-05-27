@@ -89,7 +89,7 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
       </Head>
       <main className={commonStyles.pageContainer}>
         {posts.map(post => (
-          <div className={styles.postItem}>
+          <div className={styles.postItem} key={post.uid}>
             <Link href={`/post/${post.uid}`}>
               <a>
                 <strong className={styles.postTitle}>{post.data.title}</strong>
@@ -108,11 +108,13 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
             </div>
           </div>
         ))}
-        <div>
-          <button type="button" onClick={handleGetMorePost}>
-            Carregar mais posts
-          </button>
-        </div>
+        {prismicNextPage && (
+          <div className={styles.actionsContainer}>
+            <button type="button" onClick={handleGetMorePost}>
+              Carregar mais posts
+            </button>
+          </div>
+        )}
       </main>
     </>
   );
