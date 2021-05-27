@@ -5,6 +5,7 @@ import { FiClock, FiUser, FiCalendar } from 'react-icons/fi';
 
 import { RichText } from 'prismic-dom';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 import { getPrismicClient } from '../../services/prismic';
 
 import commonStyles from '../../styles/common.module.scss';
@@ -35,6 +36,25 @@ interface PostProps {
   readingEstimatedTime: number;
 }
 
+function calculateEstimatedReadingTime(post: Post): number {
+  const wordsPerMinute = 200;
+  const wordsCount =
+    RichText.asText(
+      post.data.content.reduce((acc, data) => [...acc, ...data.body], [])
+    ).split(' ').length +
+    RichText.asText(
+      post.data.content.reduce((acc, data) => {
+        if (data.heading) {
+          return [...acc, ...data.heading.split(' ')];
+        }
+        return [...acc];
+      }, [])
+    ).split(' ').length;
+
+  const readingEstimatedTime = Math.ceil(wordsCount / wordsPerMinute);
+  return readingEstimatedTime;
+}
+
 export default function Post({
   post,
   readingEstimatedTime,
@@ -55,6 +75,11 @@ export default function Post({
 
   const { author, banner, content, title } = post.data;
   const { first_publication_date } = post;
+  const [readingTime, setReadingTime] = useState(readingEstimatedTime);
+
+  useEffect(() => {
+    setReadingTime(readingEstimatedTime);
+  }, [readingEstimatedTime]);
 
   return (
     <>
@@ -78,15 +103,18 @@ export default function Post({
             </div>
             <div>
               <FiClock />
-              <span>{`${readingEstimatedTime ?? 0} minuto(s)`}</span>
+              <span>{`${readingTime} min`}</span>
             </div>
           </div>
           <div className={styles.contentContainer}>
             {content.map((contentGroup, index) => (
               <div className={styles.content} key={index}>
                 <h3>{contentGroup.heading}</h3>
-                {contentGroup.body.map(bodyItem => (
-                  <p dangerouslySetInnerHTML={{ __html: bodyItem.text }} />
+                {contentGroup.body.map((bodyItem, index) => (
+                  <p
+                    key={index}
+                    dangerouslySetInnerHTML={{ __html: bodyItem.text }}
+                  />
                 ))}
               </div>
             ))}
@@ -118,7 +146,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getStaticProps: GetStaticProps<PostProps> = async ({ params }) => {
   const { slug } = params;
   const prismic = getPrismicClient();
   const response = await prismic.getByUID('posts', String(slug), {});
@@ -151,23 +179,9 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     },
   };
 
-  const wordsPerMinute = 200;
-  const wordsCount =
-    RichText.asText(
-      post.data.content.reduce((acc, data) => [...acc, ...data.body], [])
-    ).split(' ').length +
-    RichText.asText(
-      post.data.content.reduce((acc, data) => {
-        if (data.heading) {
-          return [...acc, ...data.heading.split(' ')];
-        }
-        return [...acc];
-      }, [])
-    ).split(' ').length;
+  const readingEstimatedTime = calculateEstimatedReadingTime(post);
 
-  const readingEstimatedTime = Math.ceil(wordsCount / wordsPerMinute);
-
-  console.log('AQui ⛳ ', { post });
+  console.log('aqui ⛳', { readingEstimatedTime });
 
   return {
     props: {
