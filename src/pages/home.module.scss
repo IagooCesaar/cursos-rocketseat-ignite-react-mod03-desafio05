@@ -41,3 +41,22 @@
     }
   }
 }
+
+.actionsContainer {
+  display: flex;
+  flex-direction: row;
+  margin-top: 4.125rem;
+
+  button {
+    color: var(--highlight);
+    background: transparent;
+    border: 0;
+    font-weight: 600;
+    font-size: 1.125rem;
+
+    transition: filter 0.2s;
+    &:hover {
+      filter: brightness(1.2);
+    }
+  }
+}
