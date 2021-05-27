@@ -5,6 +5,7 @@ import { FiClock, FiUser, FiCalendar } from 'react-icons/fi';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
+import { RichText } from 'prismic-dom';
 import { getPrismicClient } from '../../services/prismic';
 
 import commonStyles from '../../styles/common.module.scss';
@@ -29,13 +30,15 @@ interface Post {
 
 interface PostProps {
   post: Post;
+  readingEstimatedTime: number;
 }
 
-export default function Post({ post }: PostProps): JSX.Element {
+export default function Post({
+  post,
+  readingEstimatedTime,
+}: PostProps): JSX.Element {
   const { author, banner, content, title } = post?.data;
   const { first_publication_date } = post;
-
-  console.log(post);
 
   return (
     <>
@@ -59,7 +62,7 @@ export default function Post({ post }: PostProps): JSX.Element {
             </div>
             <div>
               <FiClock />
-              <span>tempo de leitura</span>
+              <span>{`${readingEstimatedTime ?? 0} minuto(s)`}</span>
             </div>
           </div>
           <div className={styles.contentContainer}>
@@ -130,7 +133,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
           body: item.body.map(bodyItem => {
             return {
               text: bodyItem.text,
-              // text: RichText.asHtml(bodyItem),
             };
           }),
         };
@@ -138,9 +140,26 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     },
   };
 
+  const wordsPerMinute = 200;
+  const wordsCount =
+    RichText.asText(
+      post.data.content.reduce((acc, data) => [...acc, ...data.body], [])
+    ).split(' ').length +
+    RichText.asText(
+      post.data.content.reduce((acc, data) => {
+        if (data.heading) {
+          return [...acc, ...data.heading.split(' ')];
+        }
+        return [...acc];
+      }, [])
+    ).split(' ').length;
+
+  const readingEstimatedTime = Math.ceil(wordsCount / wordsPerMinute);
+
   return {
     props: {
       post,
+      readingEstimatedTime,
     },
     revalidate: 2 * 60 * 60, // 2 hours
   };
