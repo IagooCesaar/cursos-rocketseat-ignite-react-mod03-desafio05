@@ -2,8 +2,6 @@ import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import Prismic from '@prismicio/client';
 import { FiClock, FiUser, FiCalendar } from 'react-icons/fi';
-import { format } from 'date-fns';
-import ptBR from 'date-fns/locale/pt-BR';
 
 import { RichText } from 'prismic-dom';
 import { useRouter } from 'next/router';
@@ -11,6 +9,7 @@ import { getPrismicClient } from '../../services/prismic';
 
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
+import { formatDate } from '../../utils/formatDate';
 
 interface Post {
   first_publication_date: string | null;
@@ -49,7 +48,7 @@ export default function Post({
           <title> Aguarde... | spacetraveling</title>
         </Head>
         <main className={commonStyles.pageContainer}>
-          <span className={styles.loadingWarning}>Carregado...</span>
+          <span className={styles.loadingWarning}>Carregando...</span>
         </main>
       </>
     );
@@ -69,7 +68,7 @@ export default function Post({
           <div className={styles.postInfos}>
             <div>
               <FiCalendar />
-              <span>{first_publication_date}</span>
+              <span>{formatDate(first_publication_date)}</span>
             </div>
             <div>
               <FiUser />
@@ -132,11 +131,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }
 
   const post: Post = {
-    first_publication_date: format(
-      new Date(response.first_publication_date),
-      'dd MMM yyyy',
-      { locale: ptBR }
-    ),
+    first_publication_date: response.first_publication_date,
     data: {
       title: response.data.title,
       author: response.data.author,
