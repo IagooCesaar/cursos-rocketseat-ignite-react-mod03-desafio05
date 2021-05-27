@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 
 import Prismic from '@prismicio/client';
-
+import { FiClock, FiUser, FiCalendar } from 'react-icons/fi';
 import { getPrismicClient } from '../services/prismic';
 
 import commonStyles from '../styles/common.module.scss';
@@ -50,11 +50,11 @@ export default function Home({
             <span className={styles.postSubtitle}>{post.data.subtitle}</span>
             <div className={styles.postInfos}>
               <div>
-                <img src="/calendar.png" alt="Data da publicação" />
+                <FiCalendar />
                 <span>{post.first_publication_date}</span>
               </div>
               <div>
-                <img src="/user.png" alt="Autor" />
+                <FiUser />
                 <span>{post.data.author}</span>
               </div>
             </div>
