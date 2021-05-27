@@ -1,7 +1,9 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import Prismic from '@prismicio/client';
-import { RichText } from 'prismic-dom';
+import { FiClock, FiUser, FiCalendar } from 'react-icons/fi';
+import { format } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
 
 import { getPrismicClient } from '../../services/prismic';
 
@@ -48,15 +50,15 @@ export default function Post({ post }: PostProps): JSX.Element {
           <h2>{title}</h2>
           <div className={styles.postInfos}>
             <div>
-              <img src="/calendar.png" alt="Data da publicação" />
+              <FiCalendar />
               <span>{first_publication_date}</span>
             </div>
             <div>
-              <img src="/user.png" alt="Autor" />
+              <FiUser />
               <span>{author}</span>
             </div>
             <div>
-              <img src="/clock.png" alt="Autor" />
+              <FiClock />
               <span>tempo de leitura</span>
             </div>
           </div>
@@ -112,13 +114,11 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }
 
   const post: Post = {
-    first_publication_date: new Date(
-      response.first_publication_date
-    ).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-    }),
+    first_publication_date: format(
+      new Date(response.first_publication_date),
+      'dd MMM yyyy',
+      { locale: ptBR }
+    ),
     data: {
       title: response.data.title,
       author: response.data.author,
