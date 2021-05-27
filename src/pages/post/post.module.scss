@@ -12,6 +12,13 @@
   }
 }
 
+.loadingWarning {
+  margin: 0 auto;
+  font-size: 2rem;
+  font-weight: 600;
+  font-style: italic;
+}
+
 .post {
   margin-top: 5rem;
 
@@ -53,18 +60,22 @@
     .content {
       h3 {
         font-weight: 700;
-        font-size: 1.5rem;
-        line-height: 1.725rem;
-        margin-bottom: 1.125rem;
+        font-size: 2rem;
+        line-height: 2.125rem;
+        margin-bottom: 2.25rem;
       }
 
       p {
-        font-size: 1.125rem;
+        font-size: 1.25rem;
         line-height: 1.5rem;
 
         & + p {
-          margin-top: 1.5rem;;
+          margin-top: 1.5rem;
         }
+      }
+
+      & + .content {
+        margin-top: 2.25rem;
       }
     }
 

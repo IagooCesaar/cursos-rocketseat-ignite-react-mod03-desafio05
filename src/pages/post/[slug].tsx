@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
 import { RichText } from 'prismic-dom';
+import { useRouter } from 'next/router';
 import { getPrismicClient } from '../../services/prismic';
 
 import commonStyles from '../../styles/common.module.scss';
@@ -39,6 +40,20 @@ export default function Post({
 }: PostProps): JSX.Element {
   const { author, banner, content, title } = post?.data;
   const { first_publication_date } = post;
+
+  const router = useRouter();
+  if (router.isFallback) {
+    return (
+      <>
+        <Head>
+          <title> Aguarde... | spacetraveling</title>
+        </Head>
+        <main className={commonStyles.pageContainer}>
+          <span className={styles.loadingWarning}>Carregado...</span>
+        </main>
+      </>
+    );
+  }
 
   return (
     <>
@@ -87,6 +102,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     [Prismic.predicates.at('document.type', 'posts')],
     {
       fetch: ['posts.uid'],
+      pageSize: 3,
     }
   );
   const paths = postsResponse.results.map(post => {
