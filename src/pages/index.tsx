@@ -1,8 +1,9 @@
+import { useEffect, useState } from 'react';
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-
 import Prismic from '@prismicio/client';
+
 import { FiUser, FiCalendar } from 'react-icons/fi';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -28,14 +29,59 @@ interface PostPagination {
 
 interface HomeProps {
   postsPagination: PostPagination;
-  posts: Post[];
+  preview: boolean;
 }
 
-export default function Home({
-  postsPagination,
-  posts,
-}: HomeProps): JSX.Element {
-  // TODO
+interface PrismicDocument {
+  uid: string;
+  first_publication_date: string;
+  data: {
+    author: string;
+    title: string;
+    subtitle: string;
+  };
+}
+
+function PrimiscDocumentToPost(document: PrismicDocument[]): Post[] {
+  const posts = document.map(post => {
+    return {
+      uid: post.uid,
+      first_publication_date: format(
+        new Date(post.first_publication_date),
+        'dd MMM yyyy',
+        { locale: ptBR }
+      ),
+      data: {
+        author: post.data.author,
+        subtitle: post.data.subtitle,
+        title: post.data.title,
+      },
+    };
+  });
+  return posts;
+}
+
+export default function Home({ postsPagination }: HomeProps): JSX.Element {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [prismicNextPage, setPrismicNextPage] = useState('');
+
+  useEffect(() => {
+    setPosts(postsPagination.results);
+    setPrismicNextPage(postsPagination.next_page);
+  }, [postsPagination]);
+
+  function handleGetMorePost(): void {
+    fetch(prismicNextPage)
+      .then(response => response.json())
+      .then(data => {
+        setPrismicNextPage(data.next_page);
+        const newPosts = PrimiscDocumentToPost(
+          data.results as PrismicDocument[]
+        );
+        setPosts([...posts, ...newPosts]);
+      });
+  }
+
   return (
     <>
       <Head>
@@ -62,6 +108,11 @@ export default function Home({
             </div>
           </div>
         ))}
+        <div>
+          <button type="button" onClick={handleGetMorePost}>
+            Carregar mais posts
+          </button>
+        </div>
       </main>
     </>
   );
@@ -77,25 +128,18 @@ export const getStaticProps: GetStaticProps = async () => {
       page: 1,
     }
   );
-  const posts: Post[] = postsResponse.results.map(post => {
-    return {
-      uid: post.uid,
-      first_publication_date: format(
-        new Date(post.first_publication_date),
-        'dd MMM yyyy',
-        { locale: ptBR }
-      ),
-      data: {
-        author: post.data.author,
-        subtitle: post.data.subtitle,
-        title: post.data.title,
-      },
-    };
-  });
+
+  const posts: Post[] = PrimiscDocumentToPost(
+    postsResponse.results as PrismicDocument[]
+  );
 
   return {
     props: {
-      posts,
+      postsPagination: {
+        next_page: postsResponse.next_page,
+        results: posts,
+      },
     },
+    revalidate: 2 * 60 * 60, // 2 hours
   };
 };
