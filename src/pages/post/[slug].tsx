@@ -33,7 +33,6 @@ interface Post {
 
 interface PostProps {
   post: Post;
-  readingEstimatedTime: number;
 }
 
 function calculateEstimatedReadingTime(post: Post): number {
@@ -55,10 +54,7 @@ function calculateEstimatedReadingTime(post: Post): number {
   return readingEstimatedTime;
 }
 
-export default function Post({
-  post,
-  readingEstimatedTime,
-}: PostProps): JSX.Element {
+export default function Post({ post }: PostProps): JSX.Element {
   const router = useRouter();
   if (router.isFallback) {
     return (
@@ -73,13 +69,9 @@ export default function Post({
     );
   }
 
+  const readingTime = calculateEstimatedReadingTime(post);
   const { author, banner, content, title } = post.data;
   const { first_publication_date } = post;
-  const [readingTime, setReadingTime] = useState(readingEstimatedTime);
-
-  useEffect(() => {
-    setReadingTime(readingEstimatedTime);
-  }, [readingEstimatedTime]);
 
   return (
     <>
@@ -179,14 +171,9 @@ export const getStaticProps: GetStaticProps<PostProps> = async ({ params }) => {
     },
   };
 
-  const readingEstimatedTime = calculateEstimatedReadingTime(post);
-
-  console.log('aqui ⛳', { readingEstimatedTime });
-
   return {
     props: {
       post,
-      readingEstimatedTime,
     },
     revalidate: 2 * 60 * 60, // 2 hours
   };
