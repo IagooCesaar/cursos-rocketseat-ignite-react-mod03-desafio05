@@ -42,15 +42,15 @@ interface PrismicDocument {
   };
 }
 
+function formatDate(date: string): string {
+  return format(new Date(date), 'dd MMM yyyy', { locale: ptBR });
+}
+
 function PrimiscDocumentToPost(document: PrismicDocument[]): Post[] {
   const posts = document.map(post => {
     return {
       uid: post.uid,
-      first_publication_date: format(
-        new Date(post.first_publication_date),
-        'dd MMM yyyy',
-        { locale: ptBR }
-      ),
+      first_publication_date: post.first_publication_date,
       data: {
         author: post.data.author,
         subtitle: post.data.subtitle,
@@ -99,7 +99,7 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
             <div className={styles.postInfos}>
               <div>
                 <FiCalendar />
-                <span>{post.first_publication_date}</span>
+                <span>{formatDate(post.first_publication_date)}</span>
               </div>
               <div>
                 <FiUser />
