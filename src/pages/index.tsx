@@ -3,7 +3,9 @@ import Head from 'next/head';
 import Link from 'next/link';
 
 import Prismic from '@prismicio/client';
-import { FiClock, FiUser, FiCalendar } from 'react-icons/fi';
+import { FiUser, FiCalendar } from 'react-icons/fi';
+import { format } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
 import { getPrismicClient } from '../services/prismic';
 
 import commonStyles from '../styles/common.module.scss';
@@ -78,13 +80,11 @@ export const getStaticProps: GetStaticProps = async () => {
   const posts: Post[] = postsResponse.results.map(post => {
     return {
       uid: post.uid,
-      first_publication_date: new Date(
-        post.first_publication_date
-      ).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      }),
+      first_publication_date: format(
+        new Date(post.first_publication_date),
+        'dd MMM yyyy',
+        { locale: ptBR }
+      ),
       data: {
         author: post.data.author,
         subtitle: post.data.subtitle,
