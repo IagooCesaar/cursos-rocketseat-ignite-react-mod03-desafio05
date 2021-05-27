@@ -39,9 +39,6 @@ export default function Post({
   post,
   readingEstimatedTime,
 }: PostProps): JSX.Element {
-  const { author, banner, content, title } = post?.data;
-  const { first_publication_date } = post;
-
   const router = useRouter();
   if (router.isFallback) {
     return (
@@ -55,6 +52,9 @@ export default function Post({
       </>
     );
   }
+
+  const { author, banner, content, title } = post.data;
+  const { first_publication_date } = post;
 
   return (
     <>
@@ -146,11 +146,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         return {
           heading: item.heading,
           body: item.body,
-          // body: item.body.map(bodyItem => {
-          //   return {
-          //     text: bodyItem.text,
-          //   };
-          // }),
         };
       }),
     },
@@ -171,6 +166,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     ).split(' ').length;
 
   const readingEstimatedTime = Math.ceil(wordsCount / wordsPerMinute);
+
+  console.log('AQui ⛳ ', { post });
 
   return {
     props: {
