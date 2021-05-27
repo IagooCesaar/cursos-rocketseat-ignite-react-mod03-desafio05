@@ -5,12 +5,11 @@ import Link from 'next/link';
 import Prismic from '@prismicio/client';
 
 import { FiUser, FiCalendar } from 'react-icons/fi';
-import { format } from 'date-fns';
-import ptBR from 'date-fns/locale/pt-BR';
 import { getPrismicClient } from '../services/prismic';
 
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
+import { formatDate } from '../utils/formatDate';
 
 interface Post {
   uid?: string;
@@ -40,10 +39,6 @@ interface PrismicDocument {
     title: string;
     subtitle: string;
   };
-}
-
-function formatDate(date: string): string {
-  return format(new Date(date), 'dd MMM yyyy', { locale: ptBR });
 }
 
 function PrimiscDocumentToPost(document: PrismicDocument[]): Post[] {
