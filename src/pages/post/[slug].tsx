@@ -217,7 +217,7 @@ export const getStaticProps: GetStaticProps<PostProps> = async ({
     }
   );
   let previousPost = null;
-  if (responsePreviousPost) {
+  if (responsePreviousPost.results.length) {
     previousPost = {
       uid: responsePreviousPost.results[0].uid,
       title: responsePreviousPost.results[0].data.title,
@@ -239,7 +239,7 @@ export const getStaticProps: GetStaticProps<PostProps> = async ({
     }
   );
   let nextPost = null;
-  if (responseNextPost) {
+  if (responseNextPost.results.length) {
     nextPost = {
       uid: responseNextPost.results[0].uid,
       title: responseNextPost.results[0].data.title,
