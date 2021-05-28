@@ -194,10 +194,50 @@ export const getStaticProps: GetStaticProps<PostProps> = async ({
     },
   };
 
+  const responsePreviousPost = await prismic.query(
+    [
+      Prismic.predicates.at('document.type', 'posts'),
+      Prismic.predicates.dateAfter(
+        'document.first_publication_date',
+        post.first_publication_date
+      ),
+    ],
+    {
+      fetch: ['posts.title'],
+      pageSize: 1,
+      page: 1,
+    }
+  );
+  const previousPost = {
+    uid: responsePreviousPost.results[0].uid,
+    title: responsePreviousPost.results[0].data.title,
+  };
+
+  const responseNextPost = await prismic.query(
+    [
+      Prismic.predicates.at('document.type', 'posts'),
+      Prismic.predicates.dateBefore(
+        'document.first_publication_date',
+        post.first_publication_date
+      ),
+    ],
+    {
+      fetch: ['posts.title'],
+      pageSize: 1,
+      page: 1,
+    }
+  );
+  const nextPost = {
+    uid: responseNextPost.results[0].uid,
+    title: responseNextPost.results[0].data.title,
+  };
+
   return {
     props: {
       post,
       preview,
+      previousPost,
+      nextPost,
     },
     revalidate: 2 * 60 * 60, // 2 hours
   };
