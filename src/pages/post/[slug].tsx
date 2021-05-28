@@ -11,6 +11,7 @@ import { getPrismicClient } from '../../services/prismic';
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
 import { formatDate } from '../../utils/formatDate';
+import { UtterancesComments } from '../../components/UtterancesComments';
 
 interface Post {
   uid: string;
@@ -112,6 +113,20 @@ export default function Post({ post }: PostProps): JSX.Element {
             ))}
           </div>
         </article>
+        <div>
+          <button type="button">anterior</button>
+          <button type="button">próximo</button>
+        </div>
+        <div>
+          <UtterancesComments
+            async
+            crossOrigin="anonymous"
+            issueTerm="pathname"
+            label="Utterances Comments"
+            repositoryURL="IagooCesaar/cursos-rocketseat-ignite-react-mod03-desafio05"
+            theme="github-dark"
+          />
+        </div>
       </main>
     </>
   );
