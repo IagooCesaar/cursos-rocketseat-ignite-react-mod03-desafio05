@@ -5,6 +5,7 @@ import { FiClock, FiUser, FiCalendar } from 'react-icons/fi';
 
 import { RichText } from 'prismic-dom';
 import { useRouter } from 'next/router';
+import React from 'react';
 import { getPrismicClient } from '../../services/prismic';
 
 import commonStyles from '../../styles/common.module.scss';
@@ -12,6 +13,7 @@ import styles from './post.module.scss';
 import { formatDate } from '../../utils/formatDate';
 import { UtterancesComments } from '../../components/UtterancesComments';
 import { LeavePreviewModeButton } from '../../components/LeavePreviewModeButton';
+import { PostNavigator } from '../../components/PostNavigator';
 
 interface Post {
   uid: string;
@@ -35,6 +37,14 @@ interface Post {
 interface PostProps {
   post: Post;
   preview: boolean;
+  previousPost?: {
+    uid: string;
+    title: string;
+  };
+  nextPost?: {
+    uid: string;
+    title: string;
+  };
 }
 
 function calculateEstimatedReadingTime(post: Post): number {
@@ -56,7 +66,12 @@ function calculateEstimatedReadingTime(post: Post): number {
   return readingEstimatedTime;
 }
 
-export default function Post({ post, preview }: PostProps): JSX.Element {
+export default function Post({
+  post,
+  preview,
+  nextPost,
+  previousPost,
+}: PostProps): JSX.Element {
   const router = useRouter();
   if (router.isFallback) {
     return (
@@ -114,20 +129,15 @@ export default function Post({ post, preview }: PostProps): JSX.Element {
             ))}
           </div>
         </article>
-        <div>
-          <button type="button">anterior</button>
-          <button type="button">próximo</button>
-        </div>
-        <div>
-          <UtterancesComments
-            async
-            crossOrigin="anonymous"
-            issueTerm="pathname"
-            label="Utterances Comments"
-            repositoryURL="IagooCesaar/cursos-rocketseat-ignite-react-mod03-desafio05"
-            theme="github-dark"
-          />
-        </div>
+        <PostNavigator previous={previousPost} next={nextPost} />
+        <UtterancesComments
+          async
+          crossOrigin="anonymous"
+          issueTerm="pathname"
+          label="Utterances Comments"
+          repositoryURL="IagooCesaar/cursos-rocketseat-ignite-react-mod03-desafio05"
+          theme="github-dark"
+        />
         {preview && <LeavePreviewModeButton />}
       </main>
     </>
@@ -165,7 +175,6 @@ export const getStaticProps: GetStaticProps<PostProps> = async ({
   const response = await prismic.getByUID('posts', String(slug), {
     ref: previewData?.ref ?? null,
   });
-
   if (!response) {
     return {
       redirect: {
@@ -174,7 +183,6 @@ export const getStaticProps: GetStaticProps<PostProps> = async ({
       },
     };
   }
-
   const post: Post = {
     uid: response.uid,
     first_publication_date: response.first_publication_date,
@@ -208,10 +216,13 @@ export const getStaticProps: GetStaticProps<PostProps> = async ({
       page: 1,
     }
   );
-  const previousPost = {
-    uid: responsePreviousPost.results[0].uid,
-    title: responsePreviousPost.results[0].data.title,
-  };
+  let previousPost = null;
+  if (responsePreviousPost) {
+    previousPost = {
+      uid: responsePreviousPost.results[0].uid,
+      title: responsePreviousPost.results[0].data.title,
+    };
+  }
 
   const responseNextPost = await prismic.query(
     [
@@ -227,10 +238,13 @@ export const getStaticProps: GetStaticProps<PostProps> = async ({
       page: 1,
     }
   );
-  const nextPost = {
-    uid: responseNextPost.results[0].uid,
-    title: responseNextPost.results[0].data.title,
-  };
+  let nextPost = null;
+  if (responseNextPost) {
+    nextPost = {
+      uid: responseNextPost.results[0].uid,
+      title: responseNextPost.results[0].data.title,
+    };
+  }
 
   return {
     props: {

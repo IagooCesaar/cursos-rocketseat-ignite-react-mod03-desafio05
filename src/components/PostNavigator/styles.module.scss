@@ -1,0 +1,41 @@
+.container {
+  margin-top: 3.75rem;
+
+  display: flex;
+  flex-direction: column;
+
+  .wrapper {
+    width: 100%;
+    height: 3rem;
+    border-top: 1px solid var(--body);
+  }
+
+  .buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 4rem;
+
+    a, div {
+      height: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      &.left {
+        text-align: left;
+      }
+
+      &.right {
+        text-align: right;
+      }
+    }
+  }
+
+  .info {
+    color: var(--highlight);
+    font-size: 1rem;
+    font-weight: 600;
+  }
+}
