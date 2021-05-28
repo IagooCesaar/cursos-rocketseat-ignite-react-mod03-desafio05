@@ -5,13 +5,13 @@ import { FiClock, FiUser, FiCalendar } from 'react-icons/fi';
 
 import { RichText } from 'prismic-dom';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
 import { getPrismicClient } from '../../services/prismic';
 
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
 import { formatDate } from '../../utils/formatDate';
 import { UtterancesComments } from '../../components/UtterancesComments';
+import { LeavePreviewModeButton } from '../../components/LeavePreviewModeButton';
 
 interface Post {
   uid: string;
@@ -34,6 +34,7 @@ interface Post {
 
 interface PostProps {
   post: Post;
+  preview: boolean;
 }
 
 function calculateEstimatedReadingTime(post: Post): number {
@@ -55,7 +56,7 @@ function calculateEstimatedReadingTime(post: Post): number {
   return readingEstimatedTime;
 }
 
-export default function Post({ post }: PostProps): JSX.Element {
+export default function Post({ post, preview }: PostProps): JSX.Element {
   const router = useRouter();
   if (router.isFallback) {
     return (
@@ -127,6 +128,7 @@ export default function Post({ post }: PostProps): JSX.Element {
             theme="github-dark"
           />
         </div>
+        {preview ?? <LeavePreviewModeButton />}
       </main>
     </>
   );
@@ -153,7 +155,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export const getStaticProps: GetStaticProps<PostProps> = async ({ params }) => {
+export const getStaticProps: GetStaticProps<PostProps> = async ({
+  params,
+  preview = false,
+  previewData,
+}) => {
   const { slug } = params;
   const prismic = getPrismicClient();
   const response = await prismic.getByUID('posts', String(slug), {});
@@ -189,6 +195,7 @@ export const getStaticProps: GetStaticProps<PostProps> = async ({ params }) => {
   return {
     props: {
       post,
+      preview,
     },
     revalidate: 2 * 60 * 60, // 2 hours
   };

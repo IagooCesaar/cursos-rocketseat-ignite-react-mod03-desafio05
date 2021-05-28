@@ -10,6 +10,7 @@ import { getPrismicClient } from '../services/prismic';
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
 import { formatDate } from '../utils/formatDate';
+import { LeavePreviewModeButton } from '../components/LeavePreviewModeButton';
 
 interface Post {
   uid?: string;
@@ -41,7 +42,7 @@ interface PrismicDocument {
   };
 }
 
-function PrimiscDocumentToPost(document: PrismicDocument[]): Post[] {
+function PrismicDocumentToPost(document: PrismicDocument[]): Post[] {
   const posts = document.map(post => {
     return {
       uid: post.uid,
@@ -56,7 +57,10 @@ function PrimiscDocumentToPost(document: PrismicDocument[]): Post[] {
   return posts;
 }
 
-export default function Home({ postsPagination }: HomeProps): JSX.Element {
+export default function Home({
+  postsPagination,
+  preview,
+}: HomeProps): JSX.Element {
   const [posts, setPosts] = useState<Post[]>([]);
   const [prismicNextPage, setPrismicNextPage] = useState('');
 
@@ -70,7 +74,7 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
       .then(response => response.json())
       .then(data => {
         setPrismicNextPage(data.next_page);
-        const newPosts = PrimiscDocumentToPost(
+        const newPosts = PrismicDocumentToPost(
           data.results as PrismicDocument[]
         );
         setPosts([...posts, ...newPosts]);
@@ -110,12 +114,16 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
             </button>
           </div>
         )}
+        {preview && <LeavePreviewModeButton />}
       </main>
     </>
   );
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticProps: GetStaticProps<HomeProps> = async ({
+  preview = false,
+  previewData,
+}) => {
   const prismic = getPrismicClient();
   const postsResponse = await prismic.query(
     [Prismic.predicates.at('document.type', 'posts')],
@@ -123,10 +131,11 @@ export const getStaticProps: GetStaticProps = async () => {
       fetch: ['posts.title', 'posts.subtitle', 'posts.author'],
       pageSize: 3,
       page: 1,
+      ref: previewData?.ref ?? null,
     }
   );
 
-  const posts: Post[] = PrimiscDocumentToPost(
+  const posts: Post[] = PrismicDocumentToPost(
     postsResponse.results as PrismicDocument[]
   );
 
@@ -136,6 +145,7 @@ export const getStaticProps: GetStaticProps = async () => {
         next_page: postsResponse.next_page,
         results: posts,
       },
+      preview,
     },
     revalidate: 2 * 60 * 60, // 2 hours
   };
