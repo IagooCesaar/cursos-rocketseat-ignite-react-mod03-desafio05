@@ -1,17 +1,26 @@
 .buttonContainer {
   width: 100%;
+  height: 3.625rem;
   background: var(--heading);
   color: var(--background);
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
   border-radius: 4px;
+  margin-top: 5.5rem;
+
+  transition: filter 0.2s;
+  &:hover {
+    filter: brightness(0.9);
+  }
 
   a {
     width: 100%;
     height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+
     font-size: 1.125rem;
     font-weight: 600;
     line-height: 1.375rem;
