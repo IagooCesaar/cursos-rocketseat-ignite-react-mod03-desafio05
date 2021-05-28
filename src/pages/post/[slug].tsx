@@ -18,6 +18,7 @@ import { PostNavigator } from '../../components/PostNavigator';
 interface Post {
   uid: string;
   first_publication_date: string | null;
+  last_publication_date: string | null;
   data: {
     title: string;
     subtitle: string;
@@ -88,7 +89,7 @@ export default function Post({
 
   const readingTime = calculateEstimatedReadingTime(post);
   const { author, banner, content, title } = post.data;
-  const { first_publication_date } = post;
+  const { first_publication_date, last_publication_date } = post;
 
   return (
     <>
@@ -102,19 +103,33 @@ export default function Post({
         <article className={styles.post}>
           <h2>{title}</h2>
           <div className={styles.postInfos}>
-            <div>
-              <FiCalendar />
-              <span>{formatDate(first_publication_date)}</span>
+            <div className={styles.criation}>
+              <div>
+                <FiCalendar />
+                <span>{formatDate(first_publication_date)}</span>
+              </div>
+              <div>
+                <FiUser />
+                <span>{author}</span>
+              </div>
+              <div>
+                <FiClock />
+                <span>{`${readingTime} min`}</span>
+              </div>
             </div>
-            <div>
-              <FiUser />
-              <span>{author}</span>
-            </div>
-            <div>
-              <FiClock />
-              <span>{`${readingTime} min`}</span>
-            </div>
+            {last_publication_date && (
+              <>
+                <div className={styles.edition}>
+                  <span>
+                    * editado em{' '}
+                    {formatDate(last_publication_date, 'dd MMM yyyy')}, às{' '}
+                    {formatDate(last_publication_date, 'HH:mm')}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
+
           <div className={styles.contentContainer}>
             {content.map((contentGroup, index) => (
               <div className={styles.content} key={index}>
@@ -186,6 +201,7 @@ export const getStaticProps: GetStaticProps<PostProps> = async ({
   const post: Post = {
     uid: response.uid,
     first_publication_date: response.first_publication_date,
+    last_publication_date: response.last_publication_date,
     data: {
       title: response.data.title,
       subtitle: response.data.subtitle,
