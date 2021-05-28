@@ -1,5 +1,3 @@
-import styles from './styles.module.scss';
-
 type UtterancesCommentsProps = {
   repositoryURL: string;
   issueTerm: string;
@@ -20,7 +18,6 @@ export function UtterancesComments({
   // https://utteranc.es/?installation_id=17233511&setup_action=install
   return (
     <section
-      className={styles.utterancesCommentsContainer}
       ref={element => {
         if (!element || element.childNodes.length) {
           return;
