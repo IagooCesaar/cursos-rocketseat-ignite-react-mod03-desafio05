@@ -75,6 +75,8 @@ export default function Post({ post, preview }: PostProps): JSX.Element {
   const { author, banner, content, title } = post.data;
   const { first_publication_date } = post;
 
+  console.log({ preview });
+
   return (
     <>
       <Head>
@@ -128,7 +130,7 @@ export default function Post({ post, preview }: PostProps): JSX.Element {
             theme="github-dark"
           />
         </div>
-        {preview ?? <LeavePreviewModeButton />}
+        {preview && <LeavePreviewModeButton />}
       </main>
     </>
   );
@@ -162,7 +164,10 @@ export const getStaticProps: GetStaticProps<PostProps> = async ({
 }) => {
   const { slug } = params;
   const prismic = getPrismicClient();
-  const response = await prismic.getByUID('posts', String(slug), {});
+  const response = await prismic.getByUID('posts', String(slug), {
+    ref: previewData?.ref ?? null,
+  });
+  console.log({ preview });
 
   if (!response) {
     return {
