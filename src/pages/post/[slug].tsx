@@ -218,48 +218,53 @@ export const getStaticProps: GetStaticProps<PostProps> = async ({
     },
   };
 
-  const responsePreviousPost = await prismic.query(
-    [
-      Prismic.predicates.at('document.type', 'posts'),
-      Prismic.predicates.dateAfter(
-        'document.first_publication_date',
-        post.first_publication_date
-      ),
-    ],
-    {
-      fetch: ['posts.title'],
-      pageSize: 1,
-      page: 1,
-    }
-  );
   let previousPost = null;
-  if (responsePreviousPost.results.length) {
-    previousPost = {
-      uid: responsePreviousPost.results[0].uid,
-      title: responsePreviousPost.results[0].data?.title,
-    };
-  }
-
-  const responseNextPost = await prismic.query(
-    [
-      Prismic.predicates.at('document.type', 'posts'),
-      Prismic.predicates.dateBefore(
-        'document.first_publication_date',
-        post.first_publication_date
-      ),
-    ],
-    {
-      fetch: ['posts.title'],
-      pageSize: 1,
-      page: 1,
-    }
-  );
   let nextPost = null;
-  if (responseNextPost.results.length) {
-    nextPost = {
-      uid: responseNextPost.results[0].uid,
-      title: responseNextPost.results[0].data?.title,
-    };
+
+  if (!preview) {
+    const responsePreviousPost = await prismic.query(
+      [
+        Prismic.predicates.at('document.type', 'posts'),
+        Prismic.predicates.dateAfter(
+          'document.first_publication_date',
+          post.first_publication_date
+        ),
+      ],
+      {
+        fetch: ['posts.title'],
+        pageSize: 1,
+        page: 1,
+      }
+    );
+
+    if (responsePreviousPost.results.length) {
+      previousPost = {
+        uid: responsePreviousPost.results[0].uid,
+        title: responsePreviousPost.results[0].data?.title,
+      };
+    }
+
+    const responseNextPost = await prismic.query(
+      [
+        Prismic.predicates.at('document.type', 'posts'),
+        Prismic.predicates.dateBefore(
+          'document.first_publication_date',
+          post.first_publication_date
+        ),
+      ],
+      {
+        fetch: ['posts.title'],
+        pageSize: 1,
+        page: 1,
+      }
+    );
+
+    if (responseNextPost.results.length) {
+      nextPost = {
+        uid: responseNextPost.results[0].uid,
+        title: responseNextPost.results[0].data?.title,
+      };
+    }
   }
 
   return {
